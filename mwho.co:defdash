@@ -1,0 +1,497 @@
+
+
+<!DOCTYPE html>
+<!-- v1.1dash includes additions:
+1. 2/18/18: Signature js in component around 107,108 and 115
+2. Added Help file.
+3. v1.25 Here we'll show a few default datapoints to an end user in a dashboard format, as well as ability to populate it on the fly
+4. v1.26 Added tenant specific DB data in Dashboard dropdown
+5. Added Tawk.to widget in the bottom right corner
+2/28/18
+6. Added editable fields for navbar at end of file
+3/4/18 dashv3
+7. Added fileUpload component on "Onboard" page, forked from Erie: https://github.com/tillo13/manywho-fileinput
+8. 3/8/18 --added in web-link and phone-link hyperlink via the table.
+
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Boomi DefDash!</title>
+     <link rel="icon" href="https://files-manywho-com.s3.amazonaws.com/40a9e988-d26c-43f2-8e40-1dfc52383152/android-icon-144x144.png">
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+        /* outer */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #268AAF;
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+        /* middle */
+        .mw-bs .wait-spinner:before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #31B2E2;
+            -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+        /* inner */
+        .mw-bs .wait-spinner:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #154E62;
+            -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+        @-webkit-keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+        @keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+      <script src="https://s3.amazonaws.com/files-manywho-com/536844c5-a76a-44d8-9528-a0934df40c51/signature_pad.min.js"></script>
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+ 
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            customResources: ['https://s3.amazonaws.com/files-manywho-com/da258443-d394-4263-8d85-168ab9ec699e/radio-button-group.js',
+                              'https://s3.amazonaws.com/files-manywho-com/395cd7c0-bc6c-4270-a44a-d6d2b53007bf/fileInputComponent.js',
+                              'https://s3.amazonaws.com/files-manywho-com/536844c5-a76a-44d8-9528-a0934df40c51/signature-pad.js'],
+            initialize: function () {
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                });
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: 'PATH_AND_VALUES',
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: true
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                        outcomes: {
+                      display: 'iconandtext' 
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'yeti'
+                };
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+                
+                 /////// Web Link Start////////////////////////////////////
+ var webLink = React.createClass({
+     render() {
+         if (this.props.contentValue) {
+             webLink = this.props.contentValue;
+             return React.createElement('a', { href: "https://" + webLink
+             }, webLink);
+         }
+         return null;
+     }
+ });
+
+ manywho.component.register('web-link', webLink);
+ /////// Web Link End /////////////////////////////////////
+
+/////// Phone Link Start////////////////////////////////
+
+            	  var phoneLink = React.createClass({
+            			render() {
+            			if (this.props.contentValue) {
+            			phoneNum = this.props.contentValue;
+            			return React.createElement('a', {href: "tel:"+phoneNum }, phoneNum);
+            		}
+            			return null;
+            		}
+            	});
+            	  
+            	manywho.component.register('phone-link', phoneLink);
+// Phone Link End/////////////////////////////////////////  
+                
+                // This is how you change text in to an icon within the cells. Add "custom-column" to the meta data for the column custom component property. 
+               var customColumn = React.createClass({
+				    render() {
+				        if (this.props.contentValue) {
+        		            if (this.props.contentValue == '1')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-home", style:{ color: 'blue' }});
+        			        else if (this.props.contentValue == '2')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-plus", style:{ color: 'orange' }});
+        			        else if (this.props.contentValue == '3')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-option-horizontal", style:{ color: 'purple' }});
+        			        else if (this.props.contentValue == '4')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-random", style:{ color: 'blue' }});
+        			        else if (this.props.contentValue == '5')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-piggy-bank", style:{ color: 'green' }});
+        			        else
+        			            return this.props.contentValue;
+				        }
+				        return null;
+				    }
+				});
+				manywho.component.register('custom-column', customColumn);
+				
+				
+				
+				
+				// SMALL TABLE FIX -- Should be in platform "Soon" TM. 
+				(function (manywho) {
+                    function centerChevrons() {
+                
+                        var chevrons = document.querySelectorAll('.table-small-chevron');
+                
+                        for (var i = 0; i < chevrons.length; i++) {
+                
+                            var $chevron = $(chevrons[i]);
+                            var parentHeight = $chevron.parent().height();
+                
+                            $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
+                
+                        }
+                
+                    }
+                
+                    var tableSmall = React.createClass({
+                
+                        onOutcomeClick: function(e, outcome) {
+                            var objectDataId = e.target.parentElement.getAttribute('data-item');
+                            this.props.onOutcome(objectDataId, outcome.id);
+                        },
+                
+                        onItemClick: function(e) {
+                
+                            if (this.props.isDesignTime)
+                                return;
+                
+                            e.preventDefault();
+                
+                            var objectDataId = e.currentTarget.getAttribute('data-item');
+                            var outcomeId = e.currentTarget.getAttribute('data-outcome');
+                
+                            this.props.onOutcome(objectDataId, outcomeId);
+                
+                        },
+                
+                        componentDidUpdate: centerChevrons,
+                
+                        componentDidMount: centerChevrons,
+                
+                        renderRows: function(objectData, outcomes, displayColumns) {
+                
+                            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+                
+                            var outcomeComponent = manywho.component.getByName('outcome');
+                
+                            return objectData.map(function (item) {
+                
+                                var classNames = ['list-group-item', 'clearfix'];
+                                var isSelected = this.props.selectedRows.filter(function(row) { return manywho.utils.isEqual(item.externalId, row.externalId, true) }).length > 0;
+                
+                                if (isSelected) {
+                
+                                    classNames.push('active');
+                
+                                }
+                
+                                var attributes = {
+                                    className: classNames.join(' '),
+                                    id: item.externalId,
+                                    'data-item': item.externalId
+                                };
+                
+                                var isOutcomeDestructive = outcomes.filter(function (outcome) {
+                
+                                    return manywho.utils.isEqual(outcome.pageActionBindingType, 'remove', true)
+                                        || manywho.utils.isEqual(outcome.pageActionBindingType, 'delete', true);
+                
+                                }).length > 0;
+                
+                                var chevron = null;
+                
+                                if (outcomes.length == 1 && !isOutcomeDestructive) {
+                
+                                    attributes['data-outcome'] = outcomes[0].id;
+                                    attributes.onClick = this.onItemClick;
+                                    chevron = React.DOM.span({ className: 'glyphicon glyphicon-chevron-right table-small-chevron' }, null);
+                
+                                }
+                
+                                if (outcomes.length != 1) {
+                
+                                    attributes.onClick = this.props.onRowClicked;
+                
+                                }
+                
+                                return React.DOM.li(attributes, [
+                                    React.DOM.table({ className: 'table table-small-item' },
+                                        React.DOM.tbody(null,
+                                             displayColumns.map(function (column) {
+                
+                                                if (column == 'mw-outcomes') {
+                
+                                                    if (outcomes.length > 1 || isOutcomeDestructive) {
+                
+                                                        return React.DOM.tr({className: 'table-actions'}, [
+                                                            React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
+                                                            React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
+                
+                                                                return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: this.props.flowKey }, null);
+                
+                                                            }, this))
+                                                        ]);
+                
+                                                    }
+                
+                                                }
+                                                else {
+                
+                                                    var selectedProperty = item.properties.filter(function (property) {
+                
+                                                        return property.typeElementPropertyId == column.typeElementPropertyId;
+                
+                                                    })[0];
+                
+                                                    if (!manywho.utils.isNullOrWhitespace(column.typeElementPropertyToDisplayId)) {
+                
+                                                        if (selectedProperty != null && selectedProperty.objectData != null) {
+                
+                                                            selectedProperty = selectedProperty.objectData[0].properties.filter(function (childProperty) {
+                
+                                                                return childProperty.typeElementPropertyId == column.typeElementPropertyToDisplayId;
+                
+                                                            })[0];
+                
+                                                        }
+                
+                                                    }
+                
+                                                    if (selectedProperty) {
+                
+                                                        var element = React.DOM.span(null, manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, this.props.flowKey));
+                
+                                                        if (this.props.isFiles &&
+                                                            (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
+                                                            || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
+                
+                                                            element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info', target: '_blank' }, 'Download');
+                
+                                                        }
+                                                        else if (!manywho.utils.isNullOrWhitespace(column.componentType))
+                                                            element = React.createElement(manywho.component.getByName(column.componentType), {
+                                                                id: item.externalId,
+                                                                propertyId: column.typeElementPropertyId,
+                                                                contentValue: selectedProperty.contentValue,
+                                                                objectData: selectedProperty.objectData,
+                                                                flowKey: this.props.flowKey,
+                                                                isEditable: column.isEditable,
+                                                                contentType: column.contentType,
+                                                                contentFormat: column.contentFormat
+                                                            });
+                
+                                                        return React.DOM.tr(null, [
+                                                            React.DOM.th({ className: 'table-small-column table-small-label' }, column.label),
+                                                            React.DOM.td({ className: 'table-small-column' }, element)
+                                                        ]);
+                
+                                                    }
+                
+                                                }
+                
+                                            }, this)
+                                        )
+                                    ),
+                                    chevron
+                                ]);
+                
+                            }, this);
+                
+                        },
+                
+                        render: function () {
+                
+                            manywho.log.info('Rendering Table-Small');
+                
+                            var classNames = [
+                                'list-group',
+                                (this.props.isValid) ? '' : 'table-invalid'
+                            ].join(' ');
+                
+                            var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
+                            return React.DOM.ul({ className: classNames }, items);
+                
+                        }
+                
+                    });
+                
+                    manywho.component.register("mw-table-small", tableSmall);
+                
+                }(manywho));
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+            }
+        };
+    </script>
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+    
+    <style>
+        .mw-bs .dash .glyphicon {
+            font-size:35px;
+            
+        }
+        
+        .mw-bs .table-small-item {
+            float: left;
+            margin-bottom: 0!important;
+            max-width: 85%!important;
+            width: auto!important;
+        }
+        .mw-bs .autopop {
+            text-align: center;
+            color: #ffffff;
+            height: 55px;
+            width: 400px;
+            background: #8B2428;
+           /* padding: 10px 10px;*/
+            font-size: 20px;
+            white-space: normal;
+        }
+        
+         .mw-bs .navbar .navbar-brand 
+      {
+        font-size: 1px;
+      }
+
+      .mw-bs .nav.navbar-nav 
+      {
+    	padding-top: 7px;
+      }
+
+     
+       .mw-bs .navbar-brand {
+            background: url(https://files-manywho-com.s3.amazonaws.com/a82c5401-9cd1-427f-8bc3-2fdbe0023ad3/Atom-WordMark-clr_34.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+            font-size: 1px;
+            font-weight: 500;
+            line-height: 30px;
+            width: 100px;
+            /*margin: 10px 15px 10px 15px !important; */
+            padding: 0px 0px 0px 36px !important;
+            font-weight: bold;
+            background-size: contain;
+        }
+   
+    </style>
+   
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/597b65035dfc8255d623f70a/1c75hfj1v';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+    
+</body>
+</html>
