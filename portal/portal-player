@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110069796-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-110069796-1');
+    </script>
+    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Flow Demo Portal</title>
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+   /* Spinner */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+           /* border: 3px solid transparent;
+            border-top-color: #268AAF;*/
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+            transform: scale(1.75);
+        }
+
+        /* More Spinner */
+        .mw-bs .wait-spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner .6s linear infinite;
+        }
+
+        @keyframes spinner {
+          to {transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    richText: {
+                        url: 'https://cdn.tinymce.com/4/tinymce.min.js',
+                        fontSize: '12px',
+                        plugins: [
+                            'advlist autolink link lists link image charmap print hr anchor spellchecker',
+                            'searchreplace visualblocks fullscreen wordcount code insertdatetime',
+                            'media table directionality emoticons contextmenu paste textcolor'
+                        ],
+                        toolbar: 'undo redo | styleselect | fontsizeselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link mwimage ',
+                        fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt'
+                    }
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: 'PATH_AND_VALUES',
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'cosmo',
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+
+    <style>
+
+    /* Custom Styles (Dell Colors) */
+    .mw-bs .main-container-inner>.navbar {
+        background:#007db8;
+        border:0px;
+        box-shadow: 0px 0px 20px #ffffff;
+        background: linear-gradient(to right, #007db8 , #006a9c);
+    }
+
+    .mw-bs .main-scroller{
+        background: linear-gradient(to bottom right, #dcdcdc, #c5c5c5);
+    } 
+
+    .mw-bs .main-scroller .container {
+        background: #fff;
+        box-shadow: 0px 0px 15px #888888;        
+    }
+
+    .mw-bs .navbar-brand{           
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NDkxMSwgMjAxMy8xMC8yOS0xMTo0NzoxNiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpERjdGRkE0REZBNDgxMUU0QkFFQUFCMEEzREU0M0RCMSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpERjdGRkE0RUZBNDgxMUU0QkFFQUFCMEEzREU0M0RCMSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkRGN0ZGQTRCRkE0ODExRTRCQUVBQUIwQTNERTQzREIxIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkRGN0ZGQTRDRkE0ODExRTRCQUVBQUIwQTNERTQzREIxIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+zh2YuQAAAdNJREFUeNrE1k1LAkEYB3BdLMigIOgQUV2kkujNQ4QZHYyo7hFBULeUvkARCuVB6NLNDnWJQLI+QARFYC/QqSC61TEhskQPRQfb/hN/YRhlZcm1gZ/rMzvzzDi7s6tN13WbAT/sQVovLmmemzDKYRcfJcoobEMP4zO4hVfGzTAIfsYPEISLokwlRg1zhjlYBqfBDJ1sk2OfsNpG7bDFhvuglVk+mcY+OnOUHCDEBhETiVUR5gipA3h4Iv6H5AVx5vLIF/kRWqHOVpnyASlwiRF9HDFQgdkXLDHnmAgSDMpd1F6wm7jo33Aggiyc8kQMTuAGNqQOO5zEPGNxTIKX8SxcwZTU51LkdmCdGriRbNwsouRhCNoZz8EurLO+hpuxE65hGLzQD8fsk4QRB4OMdIHuoY+7coF1R9DFgWthkvXPPL7zmJLyZMWHplz9PH9RNzRK9TPg5i9dhA7WD0Ab1DN2s68dvgqPClFWuW5qERtmRamLSve6KC9wrrRpgqD4IpYoB+MQhRC0iHG5hoec2RuswSbE2D7DmYrleYI7Lp/GnNO/RxO3qdPkXhAlYdVGCzCnz6pHxSfvMJflD7uqPa6r8sKx5JX5Ly99s39b/EY5fgQYAOhqGgHwQVyJAAAAAElFTkSuQmCC);
+        background-position: left center;
+        background-repeat: no-repeat;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 50px;
+        margin: 0 15px 0 15px !important;
+        padding: 0px 0px 5px 34px !important;
+        font-weight: bold;
+    }
+
+
+    .mw-bs .navbar-default .navbar-nav > li > a{  
+        background: #0388c7;
+        border-bottom: 1px solid #0077af;
+        transition: all .2s ease-in-out;
+    }
+
+    .mw-bs .navbar-default .navbar-nav > li > a:focus, .mw-bs .navbar-default .navbar-nav > li > a:hover {
+        color: #fff;
+        background-color: #015f8c;
+    }
+
+    .mw-bs .navbar-default .navbar-nav > .active > a, .mw-bs .navbar-default .navbar-nav > .active > a:focus, .mw-bs .navbar-default .navbar-nav > .active > a:hover {
+        color: #fff;
+        background-color: #0b73a5;
+    }
+
+    .mw-bs .navbar-default .navbar-nav > .open > a, .mw-bs .navbar-default .navbar-nav > .open > a:focus, .mw-bs .navbar-default .navbar-nav > .open > a:hover {
+        background-color: #015f8c;
+    }
+
+   
+    /* Page Styles */ 
+
+    .mw-bs .main h3, .mw-bs .main .h3{
+        font-weight: bold;
+    }
+
+    .mw-bs .main h3:first-child, .mw-bs .main .h3:first-child{
+        margin-top:0px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .mw-bs .main h4, .mw-bs .main .h4{
+        font-weight: bold;
+    }
+
+    .mw-bs .main h4:first-child, .mw-bs .main .h4:first-child{
+        margin-top:0px;
+    }
+    
+    /*Launch demo flow buttons*/
+    .mw-bs .launch{
+        margin-top:25px;
+        white-space:normal;
+        font-size:18px;
+        border-radius:5px;
+        border-width:0px;  
+        border-style:outset;
+    }
+    
+    .mw-bs .isereq {
+
+        white-space: normal;
+        font-size:22px;
+        border-radius:3px;
+    }
+    
+    img.img-responsive.screenshot {
+        box-shadow: 4px 4px 2px #888888;
+        border-width: 1px;
+        border-style: outset;
+        border-radius: 8px;        
+    }
+        
+    img.img-responsive.screenshot:hover {
+        box-shadow: 1px 1px 2px 1px rgba(0, 140, 186, 0.5);
+        transform: scale(1.03);
+    }    
+    
+    /*Container border*/
+    .mw-bs .tab-content {
+        margin-top: 0px;
+        border: 1px solid #ccc;
+        border-top: 0px;
+        padding: 15px;
+    }
+    
+    .mw-bs .nav-tabs>li {
+        float: left;
+        margin-bottom: -1px;
+        background: #eaeaea;
+    }
+    
+
+    /* Clear MW Margin Top Set in Core CSS */
+    .mw-bs .main:nth-of-type(1){
+        margin-top:0px;
+    }
+
+    .mw-bs .navbar-default .navbar-collapse, .mw-bs .navbar-default .navbar-form{
+        border:0;
+    }
+
+
+    /* Fix issue with padding on tablet and mobile */
+    @media (max-width:999px){
+        .mw-bs .main-scroller .container {
+            padding:20px;
+        }
+    }
+
+
+    @media (max-width:767px){
+
+        .mw-bs .dropdown-menu li{
+            padding:0px;
+            border:0;
+        }
+        .mw-bs .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+            padding:10px 15px;
+            border:0;
+        }
+        .mw-bs .navbar-default .navbar-toggle:focus, .mw-bs .navbar-default .navbar-toggle:hover {
+            background-color: #015f8c;
+        }
+
+        .mw-bs .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .mw-bs .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus, .mw-bs .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover {            
+            background-color: #0d79ad
+        }
+
+        .mw-bs .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus, .mw-bs .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover {   
+            background-color: #015f8c;
+        }
+    }
+
+    /* Use Left Nav Styles when above 1000px width */ 
+    @media (min-width: 1000px){
+
+        .mw-bs .navbar-brand{
+            float:none;
+            display:block;
+            padding:0px;            
+            width:100%;           
+        }
+
+        .mw-bs .navbar-header{
+            float:none;
+            width:100%;
+        }
+
+        .mw-bs .navbar-collapse{
+            padding:0px;
+        }
+
+        .mw-bs .navbar-nav {
+            float: none;
+            margin: 0;
+        }
+
+        .mw-bs .navbar-nav > li {
+            float: none;
+        }        
+
+        .mw-bs .dropdown-menu {
+            position: relative;
+            top:inherit;
+            left: inherit;
+            z-index: inherit;
+            float: none;
+            min-width: auto;
+            font-size: 15px;
+            text-align: left;
+            border:0;
+        }
+
+        .mw-bs .dropdown-menu li{
+            padding:0px;
+        }
+
+        .mw-bs .dropdown-menu li a{
+            padding:3px 15px;
+        }
+
+        .mw-bs .dropdown-menu > li > a:focus, .mw-bs .dropdown-menu > li > a:hover {
+            color: #000;
+            background-color: #d9edf7;            
+        }
+
+        .mw-bs .dropdown-menu > .active > a, .mw-bs .dropdown-menu > .active > a:focus, .mw-bs .dropdown-menu > .active > a:hover {
+            color: #000;
+            background-color: #e6e6e6;  
+        }
+
+        .mw-bs .open .caret {
+            transform: rotateY(180deg);
+        }
+
+        .mw-bs .main-container-inner>.navbar {
+            margin-bottom: 0!important;
+            width: 215px;
+            position: fixed;
+            border-radius: 0;
+            height: 100%;
+        }
+
+        .mw-bs .main-scroller{
+            margin-left:215px;
+        }
+
+        .mw-bs .main-scroller .container {
+            width: auto;
+            padding:25px;
+            margin:25px !important;
+            border-radius: 3px;
+        }
+        
+        .mw-bs .navbar .container {
+            width: auto !important;
+            margin:0px;
+            padding:0px;
+        }
+        
+        .mw-bs .table > tbody > tr.info > td, .mw-bs .table > tbody > tr.info > th, .mw-bs .table > tbody > tr > td.info, .mw-bs .table > tbody > tr > th.info, .mw-bs .table > tfoot > tr.info > td, .mw-bs .table > tfoot > tr.info > th, .mw-bs .table > tfoot > tr > td.info, .mw-bs .table > tfoot > tr > th.info, .mw-bs .table > thead > tr.info > td, .mw-bs .table > thead > tr.info > th, .mw-bs .table > thead > tr > td.info, .mw-bs .table > thead > tr > th.info {
+            background-color: #ecf9ff;
+        }
+        
+        .mw-bs .table .danger, .mw-bs .table .info, .mw-bs .table .success, .mw-bs .table .warning, .mw-bs table .danger, .mw-bs table .info, .mw-bs table .success, .mw-bs table .warning {
+            color: #0a0a0a;
+        }
+       
+    }
+    
+
+
+    </style>
+</body>
+</html>
