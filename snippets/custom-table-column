@@ -1,0 +1,23 @@
+// This is how you change text in to an icon within the cells. Add "custom-column" to the meta data for the column custom component property. 
+                var customColumn = React.createClass({
+				    render() {
+				        if (this.props.contentValue) {
+        		            if (this.props.contentValue == '1')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-home", style:{ color: 'blue' }});
+        			        else if (this.props.contentValue == '2')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-plus", style:{ color: 'orange' }});
+        			        else if (this.props.contentValue == '3')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-option-horizontal", style:{ color: 'purple' }});
+        			        else if (this.props.contentValue == '4')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-random", style:{ color: 'blue' }});
+        			        else if (this.props.contentValue == '5')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-piggy-bank", style:{ color: 'green' }});
+        			        else
+        			            return this.props.contentValue;
+				        }
+				        return null;
+				    }
+				});
+
+				manywho.component.register('custom-column', customColumn);
+				
