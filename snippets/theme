@@ -1,0 +1,1 @@
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'cerulean' //Nice addition by Jack Gibson
