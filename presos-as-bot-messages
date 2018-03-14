@@ -116,7 +116,7 @@
                     mode: queryParameters['mode'],
                     reportingMode: queryParameters['reporting-mode'],
                     
-                    replaceUrl: true,
+                    replaceUrl: false,
                     collaboration: {
                         isEnabled: false
                     },
@@ -156,13 +156,14 @@
 
     <script src="https://assets.manywho.com/js/loader.min.js"></script>
     <style>
-        .mw-bs .transcriptContainer {
+ .mw-bs .transcriptContainer {
             border: 1px solid #828282;
             border-radius: 3px;
             min-height: 330px;
             padding-left: 15px;
             padding-right: 15px;
             margin-top: 15px;
+            padding: 15px;
             background-color: #F2F2F2;
         }
         
@@ -171,7 +172,8 @@
             border-radius: 3px;
             padding-left: 15px;
             padding-right: 15px;
-            padding-bottom: 10px;
+            padding-bottom: 6px;
+            padding-top: 15px;
             margin-top: 15px;
             background-color: #bdd8e2;
             float: left;
@@ -179,24 +181,130 @@
         }
         
         .mw-bs .humanReply {
-            border: 1px solid black;
+            border: none;
             border-radius: 3px;
-            padding-left :15px;
+            padding-left: 15px;
             padding-right: 15px;
+            padding-top: 10px;
             margin-top: 15px;
-            background-color: #d1e7dd;
+            background-color: #acc7ff;
             max-width: 70%;
             float: right;
         }
         
+
+        @media (max-width: 768px){
+            .mw-bs .botReply {
+                border: none;
+                border-radius: 3px;
+                padding-left: 15px;
+                padding-right: 15px;
+                padding-bottom: 6px;
+                padding-top: 15px;
+                margin-top: 15px;
+                background-color: #bdd8e2;
+                float: left;
+                max-width: 100%;
+                clear:both;
+                min-width: 70%;
+            }
+            
+            .mw-bs .humanReply {
+                border: none;
+                border-radius: 3px;
+                padding-left: 15px;
+                padding-right: 15px;
+                padding-top: 10px;
+                margin-top: 15px;
+                background-color: #acc7ff;
+                max-width: 100%;
+                float: right;
+                clear:both;
+                min-width: 70%;
+            }
+        }
+
         .mw-bs .chatContainer {
             border: 1px solid #b1b1b1;
             border-radius: 3px;
+            color:#000;
+            padding-left:-15px;
+            padding-left:15px !important;
             /* height: 500px; */
             background-color: #dcdcdc;
-            padding-left: 15px !important;
             box-shadow: 0px 0px 10px #b3b3b3 inset;
+            max-width: 600px;
         }
+         .mw-bs .container{
+            padding-left:25px;
+            padding-right:25px;
+        }
+         .mw-bs .navbar-brand{           
+            background: url("https://files-manywho-com.s3.amazonaws.com/7fec3d0a-bdf3-4416-882f-473e029774d1/Atom-WordMark-clr.png");
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            font-size: 1px;
+            font-weight: 500;
+            line-height: 40px;
+            height: 40px;
+            margin: 15px 15px 15px 10px !important;
+            padding: 5px 0px 5px 151px !important;
+            font-weight: bold;
+            width:200px;
+            color:#fff;
+            cursor: default;
+        }
+        
+        .mw-bs .navbar-brand:hover{
+            color:#fff;
+            font-size: 1px;
+        }
+        
+        .mw-bs .navbar-default {
+            background: #fff;
+            border-radius: 0px;
+            box-shadow: 0px 0px 21px rgba(0, 0, 0, 0.71);
+        }
+        
+         .mw-bs .main-container{
+            background-color: #39a1ce;  
+            color:#fff;     
+        }
+        
+          @media (min-width: 768px){
+            .mw-bs .main-container-inner{
+              
+                background-position: left top;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+        }
+
+        @media (max-width: 767px){
+            .mw-bs .main-container-inner{
+                background-position: left top;
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+        }
+        
+         .mw-bs .navbar-default .navbar-nav>li>a {
+             margin-top: 15px;
+            color: #515151;
+        }
+        
+          .mw-bs .datepicker {
+            /*background-color: #D2B48C;*/
+            color: #333 ;
+            }
+            
+         .mw-bs .timepicker {
+            /*background-color: #D2B48C;*/
+            color: #333 ;
+            }
+        
+
         
     </style>
 </body>
