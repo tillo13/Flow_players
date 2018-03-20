@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<!-- dashv4 (3/18/18) includes additions:
+1. 2/18/18: Signature js in component around 107,108 and 115
+2. Added Help file.
+3. v1.25 Here we'll show a few default datapoints to an end user in a dashboard format, as well as ability to populate it on the fly
+4. v1.26 Added tenant specific DB data in Dashboard dropdown
+5. Added Tawk.to widget in the bottom right corner
+2/28/18
+6. Added editable fields for navbar at end of file
+3/4/18 dashv3
+7. Added fileUpload component on Onboard"page, forked from Erie: https://github.com/tillo13/manywho fileinput
+8. 3/8/18 added in weblink and phonelink hyperlink via the table.
+9. 3/19/18 NOrton/Tillo fix ie11 bug causing infinite spinning for not finding components
+10. JG style additions
+11. 3/19/18 -removed custom-columns as rendering in ie-11 failed.
+
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta http-equiv="x-ua-compatible" content="IE=11" charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Dell Boomi!</title>
+     <link rel="icon" href="https://files-manywho-com.s3.amazonaws.com/40a9e988-d26c-43f2-8e40-1dfc52383152/android-icon-144x144.png">
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+        /* outer */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #268AAF;
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+        /* middle */
+        .mw-bs .wait-spinner:before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #31B2E2;
+            -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+        /* inner */
+        .mw-bs .wait-spinner:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #154E62;
+            -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+        @-webkit-keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+        @keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+    </style>
+    <script>
+        
+        if (typeof Object.assign != 'function') {
+          Object.assign = function(target) {
+            'use strict';
+            if (target == null) {
+              throw new TypeError('Cannot convert undefined or null to object');
+            }
+        
+            target = Object(target);
+            for (var index = 1; index < arguments.length; index++) {
+              var source = arguments[index];
+              if (source != null) {
+                for (var key in source) {
+                  if (Object.prototype.hasOwnProperty.call(source, key)) {
+                    target[key] = source[key];
+                  }
+                }
+              }
+            }
+            return target;
+          };
+        }
+    </script>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+      <script src="https://s3.amazonaws.com/files-manywho-com/536844c5-a76a-44d8-9528-a0934df40c51/signature_pad.min.js"></script>
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+ 
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            customResources: [
+                  /* this gives style-ized radio buttons 
+                'https://s3.amazonaws.com/files-manywho-com/da258443-d394-4263-8d85-168ab9ec699e/radio-button-group.js', */
+                
+                /* this gives just the horizontal radios */
+                'https://files-manywho-com.s3.amazonaws.com/9c0b4ada-b2f5-4def-9b77-b33505857b1a/basic_horizontal_radio_buttons.js',
+                'https://s3.amazonaws.com/files-manywho-com/395cd7c0-bc6c-4270-a44a-d6d2b53007bf/fileInputComponent.js',
+                'https://s3.amazonaws.com/files-manywho-com/536844c5-a76a-44d8-9528-a0934df40c51/signature-pad.js'
+                            ],
+            initialize: function () {
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: 'PATH_AND_VALUES',
+                    replaceUrl: true,
+                    collaboration: {
+                        isEnabled: true
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: queryParameters['wizard']
+                    },
+                        outcomes: {
+                      display: 'iconandtext' 
+                    },
+                    
+                    /* this adds +00:00 to all DateTime values
+                    formatting: {
+                        isEnabled: true
+                    }, 
+                    */
+                    validation: {
+                        isEnabled: true
+                    },
+                    callbacks: [],
+                    theme: "yeti", /* queryParameters['theme'] */
+                    richText: {
+                        plugins: [
+                            "advlist autolink link lists link charmap print hr anchor spellchecker",
+                            "searchreplace visualblocks fullscreen wordcount code insertdatetime",
+                            "table directionality emoticons contextmenu paste textcolor"
+                        ],
+                        toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link'
+                    }
+                };
+        var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+/////// Web Link Start////////////////////////////////////
+ var webLink = React.createClass({
+     render() {
+         if (this.props.contentValue) {
+             webLink = this.props.contentValue;
+             return React.createElement('a', { href: "https://" + webLink
+             }, webLink);
+         }
+         return null;
+     }
+ });
+
+ manywho.component.register('web-link', webLink);
+/////// Web Link End /////////////////////////////////////
+
+/////// Phone Link Start////////////////////////////////
+
+            	  var phoneLink = React.createClass({
+            			render() {
+            			if (this.props.contentValue) {
+            			phoneNum = this.props.contentValue;
+            			return React.createElement('a', {href: "tel:"+phoneNum }, phoneNum);
+            		}
+            			return null;
+            		}
+            	});
+            	  
+            	manywho.component.register('phone-link', phoneLink);
+// Phone Link End/////////////////////////////////////////  
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+    
+    <style>
+    
+        /* General Styles */
+        
+        .mw-bs *:not(.glyphicon):not(.mce-ico) {
+            font-family: "Open Sans", Helvetica, Arial, sans-serif !important;
+        }
+        
+        .mw-bs h1, .mw-bs h2, .mw-bs h3, .mw-bs h4, .mw-bs h5, .mw-bs h6 {
+            color: #0088cc;
+            font-weight: bold;
+        }
+        
+        .mw-bs .btn {
+            font-weight: bold;
+        }
+        
+        .mw-bs .btn span {
+            color: white;
+        }
+        
+        .mw-bs .btn-default {
+            background-color: #2a2a2a !important;
+        }
+        
+        .mw-bs .btn-primary {
+            background-color: #0088cc !important;
+        }
+        
+        .mw-bs .outcome.pull-right {
+            margin-right: 0;
+            margin-left: 1em;
+        }
+        
+        .mw-bs hr {
+            margin: 0;
+        }
+        
+        /* Navbar Branding Styles */
+        
+        .mw-bs .navbar-brand:before {
+            content: " ";
+            background: url(https://files-manywho-com.s3.amazonaws.com/ec2b01c5-2b89-45de-a050-cca861170485/Atom%20Logo%20-%20Blue.png) no-repeat;
+            background-size: 75%;
+            float: left;
+            height: 75px;
+            width: 60px;
+            margin-top: -20px;
+        }
+        
+        .mw-bs .navbar-toggle {
+            position: absolute;
+            right: 0;
+        }
+        
+        .mw-bs .navbar {
+            background-color: #2a2a2a;
+            border-bottom: 10px solid #0088cc;
+        }
+        
+        .mw-bs .navbar-brand {
+            font-size: 22px;
+            color: #0088cc !important;
+        }
+        
+        .mw-bs .navbar-wizard {
+            min-height: 150px;
+        }
+        
+        .mw-bs .navbar-wizard .navbar-brand {
+            display: block;
+            width: 100%;
+            height: 70px;
+            background-color: #2a2a2a;
+            border-bottom: 10px solid #c01718;
+            margin-bottom: 20px;
+        }
+        
+        .mw-bs .navbar-wizard span {
+            font-weight: bold;
+        }
+        
+        .mw-bs .navbar-wizard .steps {
+            padding: 0;
+            margin-bottom: 20px
+        }
+        
+        .mw-bs .navbar-wizard .steps > li:not(.active) > span:not(.glyphicon) {
+            color: rgb(67, 162, 102);
+        }
+        
+        .mw-bs .navbar-wizard .steps > li.active ~ li > span {
+            color: rgb(136, 136, 136) !important;
+        }
+        
+        .mw-bs .navbar-wizard .steps > li.active > span {
+            color: #4ba6dd;
+        }
+        
+        /* Table Styles */
+        
+        .mw-bs .table td {
+            background: none;    
+        }
+        
+        .mw-bs .table th, .table th:hover {
+            background-color: #e3e3e3;
+            box-shadow: none;
+        }
+        
+        .mw-bs th .table-header-icon {
+            line-height: 1.4em;
+        }
+        
+        .mw-bs .table-with-selection tr td:first-child {
+            text-align: center;
+            vertical-align: middle;
+            width: 3em;
+        }
+        
+        .mw-bs .table .form-control {
+            background: transparent;
+            border: none;
+        }
+        
+        .mw-bs .table-outcome-column button {
+            margin-bottom: 1px !important;
+        }
+        
+        .mw-bs .table-no-refresh .mw-items-header > button {
+            display: none;
+        }
+        
+        /* Form Control Styles */
+        
+        .mw-bs .form-control {
+            box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px inset;
+            border: 1px solid rgb(223, 215, 202);
+            border-radius: 4px;
+        }
+        
+        .mw-bs .mw-list {
+            padding-left: 0;
+        }
+        
+        .mw-bs .mw-select .react-selectize.default.root-node .react-selectize-control {
+            box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px inset;
+            border: 1px solid rgb(223, 215, 202);
+            border-radius: 4px;
+            min-height: 46px;
+            padding: 6px 12px;
+        }
+        
+        .mw-bs .mw-select .react-selectize.default.root-node.disabled .react-selectize-control {
+            background-color: rgb(245, 246, 247);
+        }
+        
+        .mw-bs .multi-select.react-selectize.default.root-node .simple-value {
+            border-radius: 4px;
+        }
+        
+        .mw-bs .multi-select.react-selectize.root-node .simple-value span {
+            padding: 0 2px;
+        }
+        
+        .mw-bs .max-width .react-selectize.default.root-node {
+            width: 99%;
+        }
+        
+        .mw-bs .mw-textarea>textarea[cols] {
+            max-width: 99%;
+        }
+        /*  this makes the container text stay visible for a bit
+        .mw-bs .ReactCollapse--collapse {
+            overflow: visible !important; 
+        } 
+        */
+        .mw-bs .mce-branding {
+            display: none;
+        }
+        
+        /* Container Styles */ 
+        
+        .mw-bs .main:nth-of-type(1) {
+            margin-top: 0;
+        }
+        
+        .mw-bs .mw-container {
+            margin-bottom: 0;
+        }
+        
+        .mw-bs .mw-vertical_flow.mw-container {
+            margin-bottom: 1px;
+            padding-left: 0;
+        }
+        
+        .mw-bs .mw-container h3, .mw-bs .mw-container h3:first-of-type span {
+            font-size: 18px;
+            font-weight: bold;
+            /* border-bottom: 1px solid #cfd0d2; */
+            margin-bottom 1px;
+            padding-bottom: 1px;
+        }
+        
+        /* Login Dialog Styles */
+        
+        .mw-bs .modal-backdrop {
+            background-color: #000;
+            opacity: .15;
+        }
+        
+        .mw-bs .modal-dialog {
+            margin-top: 60px;
+        }
+        
+        .mw-bs .modal-dialog .modal-header {
+            background-color: #2a2a2a;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .mw-bs .modal-dialog .modal-title {
+            color: #0088cc;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+            line-height: 75px;
+        }
+        
+        .mw-bs .modal-dialog .modal-title:before {
+            content: " ";
+            background: url(https://files-manywho-com.s3.amazonaws.com/ec2b01c5-2b89-45de-a050-cca861170485/Atom%20Logo%20-%20Blue.png) no-repeat;
+            background-size: 100%;
+            height: 75px;
+            width: 55px;
+            display: inline-block;
+            float: left;
+            border-radius: 6px;
+            margin-right: 15px;
+        }
+        
+        .mw-bs .modal-dialog .modal-body p:first-of-type {
+            display: none;
+        }
+         /*hide the "label" field in the Navigation Bar*/
+        .mw-bs .navbar .navbar-brand 
+        {
+            font-size: 1px;
+        }
+
+    </style>
+    
+    
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/597b65035dfc8255d623f70a/1c75hfj1v';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
+</body>
+</html>
