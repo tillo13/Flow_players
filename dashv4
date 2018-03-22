@@ -216,24 +216,20 @@
                                 })[0];
                 }
 /////// Web Link Start////////////////////////////////////
- var webLink = React.createClass({
-     render() {
-         if (this.props.contentValue) {
-             webLink = this.props.contentValue;
-             return React.createElement('a', { href: "https://" + webLink
-             }, webLink);
-         }
-         return null;
-     }
- });
-
- manywho.component.register('web-link', webLink);
-/////// Web Link End /////////////////////////////////////
-
+                 var webLink = React.createClass({
+                   render: function() {
+                        if (this.props.contentValue) {
+                            webvalue = this.props.contentValue;
+                            return React.createElement('a', { href: "//" + webvalue
+                            }, webvalue);
+                        }
+                    }
+                });
+manywho.component.register('web-link', webLink);
 /////// Phone Link Start////////////////////////////////
 
             	  var phoneLink = React.createClass({
-            			render() {
+            		render: function() {
             			if (this.props.contentValue) {
             			phoneNum = this.props.contentValue;
             			return React.createElement('a', {href: "tel:"+phoneNum }, phoneNum);
