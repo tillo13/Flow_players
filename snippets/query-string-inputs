@@ -10,7 +10,7 @@ initialize: function () {
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
                 
-                //End Default, begin custom addition for inputs
+               //End Default, begin custom addition for inputs
 
                //Inputs 
                 var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'noInput1';  //This logic allows the flow to launch even if someone doesn't add expected inputs
@@ -33,7 +33,7 @@ initialize: function () {
                 var jsonInputs = manywho.json.generateFlowInputs(inputs);
                 //End bit for inputs ^^
                 
-                
+                //Default player code aside from the commented 'inputs' line
                 var options = {
                     authentication: {
                         sessionId: queryParameters['session-token'],
