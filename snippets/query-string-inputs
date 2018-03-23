@@ -33,6 +33,7 @@ initialize: function () {
                 var jsonInputs = manywho.json.generateFlowInputs(inputs);
                 //End bit for inputs ^^
                 
+                
                 var options = {
                     authentication: {
                         sessionId: queryParameters['session-token'],
