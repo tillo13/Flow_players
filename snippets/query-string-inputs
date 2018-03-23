@@ -1,5 +1,5 @@
    
-                 //Below manywho.settings.initialize blob add this mechanism to pass input values via query string 
+                //Below manywho.settings.initialize blob add this mechanism to pass input values via query string 
                 var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'negative';
                 var inputs = [
                     {"input1": input1}
