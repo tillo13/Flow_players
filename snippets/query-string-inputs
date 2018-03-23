@@ -1,8 +1,8 @@
    
                  //Below manywho.settings.initialize blob add this mechanism to pass input values via query string 
-                var inputVar = queryParameters['input'];
+                var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'negative';
                 var inputs = [
-                    {"flowValue": inputVar}
+                    {"input1": input1}
                 ];
                 var jsonInputs = manywho.json.generateFlowInputs(inputs);
                 //End bit for inputs ^^
