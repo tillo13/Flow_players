@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
-    <title>States Dash</title>
+    <title>Client Onboarding Dashboard</title>
     <style>
         .mw-bs .wait-container {
             position: absolute;
@@ -27,10 +27,6 @@
             font-size: 2em;
             padding: 0 2em;
         }
-
-
-
-
    /* Spinner */
         .mw-bs .wait-spinner {
             display: block;
@@ -84,6 +80,7 @@
         var manywho = {
             cdnUrl: 'https://assets.manywho.com',
             requires: ['core', 'bootstrap3'],
+            customResources: ['https://files-manywho-com.s3.amazonaws.com/7bea7878-e464-4a28-9b77-82c72e7bcfdf//radio-button-group.js'],
             initialize: function () {
 
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
@@ -101,7 +98,7 @@
                     },
                     navigationElementId: queryParameters['navigation-element-id'],
                     mode: queryParameters['mode'],
-                    reportingMode: 'PATH_AND_VALUES',
+                    reportingMode: queryParameters['reporting-mode'],
                     replaceUrl: false,
                     collaboration: {
                         isEnabled: false
@@ -109,11 +106,11 @@
                     inputs: null,
                     annotations: null,
                     navigation: {
-                        isFixed: true,
+                        isFixed: false,
                         isWizard: false
                     },
                     callbacks: [],
-                    theme: queryParameters['theme']
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'spacelab' //Cheers JG
                 };
 
                 var tenantId = queryParameters['tenant-id'];
@@ -124,6 +121,252 @@
                                     return path && path.length > 0;
                                 })[0];
                 }
+                
+                
+                 ////////////////////////////////////////////////////
+                // Custom Column Progress Bar
+                ////////////////////////////////////////////////////
+                var progressColumn = React.createClass({
+                    render() {
+
+                        if (this.props.contentValue) {
+
+                            var raw = this.props.contentValue;
+                            var contentNum = Number(raw.substring(0, raw.indexOf('/')));
+                            var maxNum = Number(raw.substring(raw.indexOf("/") + 1));    
+
+                            var rawperc = (contentNum / maxNum)* 100;
+                            var perc = Math.round( rawperc );
+
+                            var divStyle = {
+                                width: perc + '%'                              
+                            };
+
+                            var innerContent = contentNum + "/" + maxNum; 
+
+                            if(perc < 15){
+                                divClasses = "progress-bar progress-bar-danger";
+                            } else if(perc < 30){
+                                divClasses = "progress-bar progress-bar-warning";
+                            } else {
+                                divClasses = "progress-bar";
+                            }
+
+                            return React.createElement(
+                                "div",
+                                { "className": "progress progress-custom"},
+                                React.createElement(
+                                  "div",
+                                  { "className": divClasses, role: "progressbar", "aria-valuenow": perc,
+                                    "aria-valuemin": "0", "aria-valuemax": "100", style: divStyle },
+                                  innerContent
+                                )
+                              );                            
+                        }                       
+                        return null;
+                    }
+                });
+
+                manywho.component.register('progress-column', progressColumn);
+
+
+
+                ////////////////////////////////////////////////////
+                // Custom Small Table
+                ////////////////////////////////////////////////////
+                (function (manywho) {
+                  
+                    function centerChevrons() {
+
+                        var chevrons = document.querySelectorAll('.table-small-chevron');
+
+                        for (var i = 0; i < chevrons.length; i++) {
+
+                            var $chevron = $(chevrons[i]);
+                            var parentHeight = $chevron.parent().height();
+
+                            $chevron.css('margin-top', ((parentHeight / 2) - ($chevron.height() / 2)) + 'px');
+
+                        }
+
+                    }
+
+                    var tableSmall = React.createClass({
+
+                        onOutcomeClick: function(e, outcome) {
+                            var objectDataId = e.target.parentElement.getAttribute('data-item');
+                            this.props.onOutcome(objectDataId, outcome.id);
+                        },
+
+                        onItemClick: function(e) {
+
+                            if (this.props.isDesignTime)
+                                return;
+
+                            e.preventDefault();
+
+                            var objectDataId = e.currentTarget.getAttribute('data-item');
+                            var outcomeId = e.currentTarget.getAttribute('data-outcome');
+
+                            this.props.onOutcome(objectDataId, outcomeId);
+
+                        },
+
+                        componentDidUpdate: centerChevrons,
+
+                        componentDidMount: centerChevrons,
+
+                        renderRows: function(objectData, outcomes, displayColumns) {
+
+                            var model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+
+                            var outcomeComponent = manywho.component.getByName('outcome');
+
+                            return objectData.map(function (item) {
+
+                                var classNames = ['list-group-item small-table-container', 'clearfix'];
+                                var isSelected = this.props.selectedRows.filter(function(row) { return manywho.utils.isEqual(item.externalId, row.externalId, true) }).length > 0;
+
+                                if (isSelected) {
+
+                                    classNames.push('active');
+
+                                }
+
+                                var attributes = {
+                                    className: classNames.join(' '),
+                                    id: item.externalId,
+                                    'data-item': item.externalId
+                                };
+
+                                var isOutcomeDestructive = outcomes.filter(function (outcome) {
+
+                                    return manywho.utils.isEqual(outcome.pageActionBindingType, 'remove', true)
+                                        || manywho.utils.isEqual(outcome.pageActionBindingType, 'delete', true);
+
+                                }).length > 0;
+
+                                var chevron = null;
+
+                                if (outcomes.length == 1 && !isOutcomeDestructive) {
+
+                                    attributes['data-outcome'] = outcomes[0].id;
+                                    attributes.onClick = this.onItemClick;
+                                    chevron = React.DOM.span({ className: 'glyphicon glyphicon-chevron-right table-small-chevron' }, null);
+
+                                }
+
+                                if (outcomes.length != 1) {
+
+                                    attributes.onClick = this.props.onRowClicked;
+
+                                }
+
+                                return React.DOM.li(attributes, [
+                                    React.DOM.table({ className: 'table table-small-item' },
+                                        React.DOM.tbody(null,
+                                             displayColumns.map(function (column) {
+
+                                                if (column == 'mw-outcomes') {
+
+                                                   // if (outcomes.length > 1 || isOutcomeDestructive) {
+
+                                                        return React.DOM.tr({className: 'table-actions'}, [
+                                                            React.DOM.th({ className: 'table-small-column table-small-label' }, 'Actions'),
+                                                            React.DOM.td({ className: 'table-small-column', 'data-item': item.externalId, 'data-model': model.id }, outcomes.map(function (outcome) {
+
+                                                                return React.createElement(outcomeComponent, { id: outcome.id, onClick: this.onOutcomeClick, flowKey: this.props.flowKey }, null);
+
+                                                            }, this))
+                                                        ]);
+
+                                                    //}
+
+                                                }
+                                                else {
+
+                                                    var selectedProperty = item.properties.filter(function (property) {
+
+                                                        return property.typeElementPropertyId == column.typeElementPropertyId;
+
+                                                    })[0];
+
+                                                    if (!manywho.utils.isNullOrWhitespace(column.typeElementPropertyToDisplayId)) {
+
+                                                        if (selectedProperty != null && selectedProperty.objectData != null) {
+
+                                                            selectedProperty = selectedProperty.objectData[0].properties.filter(function (childProperty) {
+
+                                                                return childProperty.typeElementPropertyId == column.typeElementPropertyToDisplayId;
+
+                                                            })[0];
+
+                                                        }
+
+                                                    }
+
+                                                    if (selectedProperty) {
+
+                                                        var element = React.DOM.span(null, manywho.formatting.format(selectedProperty.contentValue, selectedProperty.contentFormat, selectedProperty.contentType, this.props.flowKey));
+
+                                                        if (this.props.isFiles &&
+                                                            (manywho.utils.isEqual(selectedProperty.typeElementPropertyId, manywho.settings.global('files.downloadUriPropertyId'), true)
+                                                            || manywho.utils.isEqual(selectedProperty.developerName, manywho.settings.global('files.downloadUriPropertyName'), true))) {
+
+                                                            element = React.DOM.a({ href: selectedProperty.contentValue, className: 'btn btn-info', target: '_blank' }, 'Download');
+
+                                                        }
+                                                        else if (!manywho.utils.isNullOrWhitespace(column.componentType))
+                                                            element = React.createElement(manywho.component.getByName(column.componentType), {
+                                                                id: item.externalId,
+                                                                propertyId: column.typeElementPropertyId,
+                                                                contentValue: selectedProperty.contentValue,
+                                                                objectData: selectedProperty.objectData,
+                                                                flowKey: this.props.flowKey,
+                                                                isEditable: column.isEditable,
+                                                                contentType: column.contentType,
+                                                                contentFormat: column.contentFormat
+                                                            });
+
+                                                        return React.DOM.tr(null, [
+                                                            React.DOM.th({ className: 'table-small-column table-small-label' }, column.label),
+                                                            React.DOM.td({ className: 'table-small-column' }, element)
+                                                        ]);
+
+                                                    }
+
+                                                }
+
+                                            }, this)
+                                        )
+                                    ),
+                                    chevron
+                                ]);
+
+                            }, this);
+
+                        },
+
+                        render: function () {
+
+                            manywho.log.info('Rendering Table-Small');
+
+                            var classNames = [
+                                'list-group',
+                                (this.props.isValid) ? '' : 'table-invalid'
+                            ].join(' ');
+
+                            var items = this.renderRows(this.props.objectData || [], this.props.outcomes, this.props.displayColumns);
+                            return React.DOM.ul({ className: classNames }, items);
+
+                        }
+
+                    });
+
+                    manywho.component.register("mw-table-small", tableSmall);
+
+                }(manywho));
+                
 
                 manywho.engine.initialize(
                     tenantId,
@@ -141,14 +384,260 @@
     </script>
 
     <script src="https://assets.manywho.com/js/loader.min.js"></script>
-    
-    <style>
-        .mw-bs .dashbtn {
-           /* height: 110px;
-            width:147px;*/
-            white-space:normal;
-            font-size:17px;
+    <style> 
+
+        .mw-bs .nav.navbar-nav {
+            padding-top: 7px;
+        }
+
+        .mw-bs .col-nopad {
+            margin-left:-15px;
+            margin-right:-15px;
+        }
+     
+        .mw-bs .navbar-brand {
+            background: url(https://files-manywho-com.s3.amazonaws.com/0ab2e511-b2a1-417c-bda1-bbbd0d0fb0b5/sm-atom-logo.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+            font-size: 1px;
+            font-weight: 500;
+            line-height: 25px;
+            width: 160px;
+            margin: 10px 15px 10px 15px !important;
+            padding: 0px 0px 0px 36px !important;
+            font-weight: bold;
+            background-size: contain;
+        }
+
+        /* Panels on Portal page */
+        div.homepage .panel ul {
+            list-style-type: none;
+        }
+        
+        div.homepage .panel-body > ul {
+           padding-left: 0;
+        }
+        
+        div.homepage .panel-default {
+            border-radius: 10px;
+            box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        div.homepage .panel-default > .panel-heading {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            background: white;
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: bold;
+            color: #3C3E41;
+            border-bottom: 2px solid #4D4F53;
+            padding: 18px 21px 14px 20px;
+        }
+        
+        /* Blue Policy table with no borders */
+        .mw-bs .table.policy-table {
+            background: #f6f7f9;
+            border-collapse: collapse;
+            border: none;
+            margin-bottom: 0;
+        }
+        
+        .table.policy-table td {
+            border-top: none !important;
+        }
+        
+        /* Yes / No Toggle buttons */
+        .btn-group .btn {
+            background: white;
+            border: solid 1px #DEDEDE;
+            color: black;
+            width: 100px;
+        }
+        
+        .btn-group .btn.active {
+            background: #84c66e;
+            color: white;
+        }
+        
+        .btn-group .btn.active:last-child {
+            background: #a8a8a8;
+        }
+        
+        /* Condensed outcomes height after collapsible container header */
+        .ReactCollapse--content .mw-outcomes {
+            line-height: 1;
+        }
+        
+        .mw-outcomes .help-block:empty {
+            display: none;
+        }
+        
+        .mw-outcomes > .row > .outcome {
+            margin-bottom: 0 !important;
+        }
+        
+        .mw-bs .btn.add-another-policy {
+            text-align: left;
+        }
+        
+        .mw-bs .progress-custom{
+            height:24px;
+            min-width:100px;
+            font-size:1px;
+        }
+        
+        .mw-bs .progress-bar{
+            height:24px;
+            font-size:12px;
+        }
+
+        .mw-bs .progress{
+            z-index: inherit;
+            overflow: hidden;
+            height: 23px;
+            margin-bottom: 23px;
+            background-color: #e2e2e2;
+            border-radius: 5px;
+            border: 1px solid #b7b7b7;
+            -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+        }
+
+        .mw-bs .progress-bar:last-child{
+            border-radius: 0px
+        }
+        
+        .mw-bs .table-small-item {
+            float: left;
+            margin-bottom: 0!important;
+            max-width: 85%!important;
+            width: auto!important;
+        }
+        
+        
+        
+        .mw-bs .btn-default {
+            background-image: none;
+            background: #fff;
+            background-repeat: no-repeat;
+            -webkit-filter: none;
+            filter: none;
+            text-shadow: none;
+            color: #009bbb;
+            border: 1px solid #009bbb;
+            transition: all 0.3s ease;
+        }
+        
+        .mw-bs .btn-default:hover {
+            background-image: none;
+            background: #009bbb;
+            color:#fff;
+            border: 1px solid #009bbb;
+            background-repeat: no-repeat;
+            -webkit-filter: none;
+            filter: none;
+            text-shadow: none; 
+        }        
+        
+        .mw-bs .btn-primary {    
+            -webkit-filter: none;
+            filter: none;
+            border: 1px solid #345578;
+            background-image: none;
+            background: #009bbb;
+            background-repeat: no-repeat;
+            -webkit-filter: none;
+            filter: none;
+            text-shadow: none;
+            color: #fff;
+            border: 1px solid #009bbb;
+            transition: all 0.3s ease;
+        }
+        
+        .mw-bs .btn-primary:hover {    
+            background-image: none;
+            background: #fff;
+            background-repeat: no-repeat;
+            -webkit-filter: none;
+            filter: none;
+            text-shadow: none;
+            color: #009bbb;
+            border: 1px solid #009bbb;
+        }
+        
+        .mw-bs .small-table-container{
+            padding-right:30px;
+        }
+        
+        .mw-bs .table-small-chevron {
+            /* float: right; */
+            font-size: 2em;
+            position: absolute;
+            top: 46%;
+            right: 5px;
+            margin-top:0px !important;
+        }
+        
+        .mw-bs .btn.btn-outline:hover{
+            color:#009bbb;
+        }
+        
+        
+
+
+        div[data-reactid=".0.0.1.1.1:$6c6c087b-067b-4798-91fe-89051e7f343c.1:0.$9375256f-0fb3-45f9-278d-4664b4724d21.1:0.$9326dde2-d247-44b2-8e6a-bcef4ea1b025.1.0"] .btn-primary{
+           background-image: none;
+            background: #ffffff;
+            background-repeat: no-repeat;
+            -webkit-filter: none;
+            filter: none;
+            text-shadow: none;
+            color: #bdbdbd;
+            font-weight: 550;
+            border: none;
+            text-transform: uppercase;
+            font-size: 13px;
+            border-left:1px solid #fff;
+            border-top:1px solid #fff;
+            border-right: 1px solid #ccc;
+            border-bottom:1px solid #fff;
+            border-radius: 0px;
+            margin-right: 1px !important;
+            width:auto;
+            transition: all 0.3s ease;
+        }
+        
+        div[data-reactid=".0.0.1.1.1:$6c6c087b-067b-4798-91fe-89051e7f343c.1:0.$9375256f-0fb3-45f9-278d-4664b4724d21.1:0.$9326dde2-d247-44b2-8e6a-bcef4ea1b025.1.0"] .btn-primary:last-child{
+            border-right: 1px solid #fff;
+        }
+        
+        div[data-reactid=".0.0.1.1.1:$6c6c087b-067b-4798-91fe-89051e7f343c.1:0.$9375256f-0fb3-45f9-278d-4664b4724d21.1:0.$9326dde2-d247-44b2-8e6a-bcef4ea1b025.1.0"] .btn-primary:hover{
+           background-image: none;
+            background: #ffffff;
+            background-repeat: no-repeat;
+            -webkit-filter: none;
+            filter: none;
+            text-shadow: none;
+            color: rgb(68, 110, 155);
+            font-weight: 550;
+            border: none;
+            text-transform: uppercase;
+            font-size: 13px;
+            border-left:1px solid #fff;
+            border-top:1px solid #fff;
+            border-right: 1px solid #ccc;
+            border-bottom:3px solid rgb(68, 110, 155);
+            border-radius: 0px;
+            margin-right: 1px !important;
+            width:auto;
+        }
+        
+        div[data-reactid=".0.0.1.1.1:$6c6c087b-067b-4798-91fe-89051e7f343c.1:0.$9375256f-0fb3-45f9-278d-4664b4724d21.1:0.$9326dde2-d247-44b2-8e6a-bcef4ea1b025.1.0"] .btn-primary:last-child:hover{
+            border-right: 1px solid #fff;
         }
     </style>
+    
+    
 </body>
 </html>
