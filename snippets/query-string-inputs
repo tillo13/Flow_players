@@ -10,10 +10,10 @@ initialize: function () {
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
                 
-               //End Default, begin custom addition for inputs
+               //Above here is deault player stuff, below here begins custom addition for inputs
 
-               //Inputs 
-                var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'noInput1';  //This logic allows the flow to launch even if someone doesn't add expected inputs
+               //Part 1 Inputs... Explaination: <var input1 = queryParameters['input1']> would be the bare-minimum code to pass a value in via the query string, but without the additional logic in the lines below the flow might hang if it doesn't receive the expected query parameter
+                var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'noInput1';  //The additional logic in this line puts a placeholder 'noInput1' if someone doesn't add expected inputs
                 var input2 = queryParameters['input2'] != null ? queryParameters['input2'] : 'noInput2';
                 var input3 = queryParameters['input3'] != null ? queryParameters['input3'] : 'noInput3';
                 var input4 = queryParameters['input4'] != null ? queryParameters['input4'] : 'noInput4';
@@ -21,8 +21,9 @@ initialize: function () {
                 var input6 = queryParameters['input6'] != null ? queryParameters['input6'] : 'noInput6';
                 var input7 = queryParameters['input7'] != null ? queryParameters['input7'] : 'noInput7';
                 
+                //Part 2 This bit turns the array of inputs from Part 1 above into a single variable called 'inputs', that can be attached to the generateFlowInputs mechanism in Part 3 below
                 var inputs = [
-                    {"input1": input1},
+                    {"input1": input1},  //the left part of this bracked ... "input1" is the name of the input/output access value in flow itself. The right part of the bracket is the variable we created above (sourced either from the query parameter, or the placeholder)
                     {"input2": input2},
                     {"input3": input3},
                     {"input4": input4},
@@ -30,7 +31,8 @@ initialize: function () {
                     {"input6": input6},
                     {"input7": input7}
                 ];
-                var jsonInputs = manywho.json.generateFlowInputs(inputs);
+                
+                var jsonInputs = manywho.json.generateFlowInputs(inputs); // Part 3 This jsonInputs variable comprises the result of everything in Part 1 and Part 2 above, and will be referenced a bit lower in the flow options section as THE input to flow in Part 4 
                 //End bit for inputs ^^
                 
                 //Default player code aside from the commented 'inputs' line
@@ -46,7 +48,7 @@ initialize: function () {
                     collaboration: {
                         isEnabled: false
                     },
-                    inputs: jsonInputs  //Required addition to handle the inputs above. Default player includes the commented line below this.
+                    inputs: jsonInputs  //Part 4 This takes everything from the inputs above and actually passes it into a flow
                     //inputs: null,
                     annotations: null,
                     navigation: {
