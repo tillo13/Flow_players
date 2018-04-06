@@ -1,5 +1,5 @@
 ...
-//Default Player, at Line 117 in default player as of 3/23/2018
+//Starting the context for this at Line 117 in default player as of 3/23/2018
 initialize: function () {
 
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
@@ -41,7 +41,7 @@ initialize: function () {
                 var jsonInputs = manywho.json.generateFlowInputs(inputs); // Part 3 This jsonInputs variable comprises the result of everything in Part 1 and Part 2 above, and will be referenced a bit lower in the flow options section as THE input to flow in Part 4 
                 //End bit for inputs ^^
                 
-                //Default player code aside from the commented 'inputs' line
+                //Below here is default player code, aside from the commented 'inputs' line
                 var options = {
                     authentication: {
                         sessionId: queryParameters['session-token'],
