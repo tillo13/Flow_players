@@ -28,7 +28,7 @@ initialize: function () {
                 
                 //Part 2 This bit turns the many inputs from Part 1 above into a single variable called 'inputs', which can be attached to the generateFlowInputs mechanism in Part 3 below
                 var inputs = [
-                    {"input1": input1},  //the left part of this bracked ... "input1" in quotes is the name of the input/output access value in flow itself. The right part of the bracket is the variable we created above (sourced either from the query parameter, or the placeholder). They don't necessarily need to have the same name but it does make it more straightforward to work with.
+                    {"input1": input1},  //the left part of this bracket ... "input1" in quotes ... is the name of the input/output access value in flow itself. The right part of the bracket is the variable we created above (sourced either from the query parameter, or the placeholder). They don't necessarily need to have the same name but it does make it more straightforward to work with.
                     
                     {"input2": input2},
                     {"input3": input3},
