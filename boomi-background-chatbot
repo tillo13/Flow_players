@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Boomi Flow</title>
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+
+ /* Spinner */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+           /* border: 3px solid transparent;
+            border-top-color: #268AAF;*/
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+            transform: scale(1.75);
+        }
+
+        /* More Spinner */
+        .mw-bs .wait-spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner .6s linear infinite;
+        }
+
+        @keyframes spinner {
+          to {transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    errorMessage: "Derp, Cappetta is an idiot",
+                    i18n: {
+                        // If enabled datetimes will be displayed in the timezone of the running user
+                        overrideTimezoneOffset: true,
+                        // Number between -14 & +14 to specify the timezone that datetimes should be displayed in (overrideTimezoneOffset must be enabled)
+                        timezoneOffset: -6,
+                        // Culture that will be used when formatting numbers to be displayed. Clientside formatting will need to be enabled. Support cultures can be found here: http://numbrojs.com/languages.html
+                        culture: null
+                    },
+                    
+                    shortcuts: {
+                        // Execute the first outcome on the page when the Enter key is pressed
+                        progressOnEnter: true
+                    },
+                    focusInput: true,
+    
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: queryParameters['reporting-mode'],
+                    
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'readable'
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+    <style>
+    
+    .mw-bs .main-container {
+        background: url(https://files-manywho-com.s3.amazonaws.com/3c94ab95-c546-4d1d-a23e-941c76880b63/boomibackground.PNG);
+    }
+    
+    .mw-bs .chatContainer {
+        /*float: right;*/
+        position:fixed;
+        bottom:0;
+        right:0;
+        /*min-height: 300px;*/
+        /*min-width:250px;*/
+    }
+    
+ .mw-bs .transcriptContainer {
+            border: 1px solid #828282;
+            border-radius: 3px;
+            min-height: 330px;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #F2F2F2;
+           
+        }
+        
+        .mw-bs .botReply {
+            border: none;
+            border-radius: 3px;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-bottom: 6px;
+            padding-top: 15px;
+            margin-top: 15px;
+            background-color: #bdd8e2;
+            float: left;
+            max-width: 70%;
+        }
+        
+        .mw-bs .humanReply {
+            border: none;
+            border-radius: 3px;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-top: 10px;
+            margin-top: 15px;
+            background-color: #acc7ff;
+            max-width: 70%;
+            float: right;
+        }
+        
+
+        @media (max-width: 768px){
+            .mw-bs .botReply {
+                border: none;
+                border-radius: 3px;
+                padding-left: 15px;
+                padding-right: 15px;
+                padding-bottom: 6px;
+                padding-top: 15px;
+                margin-top: 15px;
+                background-color: #bdd8e2;
+                float: left;
+                max-width: 100%;
+                clear:both;
+                min-width: 70%;
+            }
+            
+            .mw-bs .humanReply {
+                border: none;
+                border-radius: 3px;
+                padding-left: 15px;
+                padding-right: 15px;
+                padding-top: 10px;
+                margin-top: 15px;
+                background-color: #acc7ff;
+                max-width: 100%;
+                float: right;
+                clear:both;
+                min-width: 70%;
+            }
+        }
+
+        .mw-bs .chatContainer {
+            border: 1px solid #b1b1b1;
+            border-radius: 3px;
+            color:#000;
+            padding-left:-15px;
+            padding-left:15px !important;
+            /* height: 500px; */
+            background-color: #dcdcdc;
+            box-shadow: 0px 0px 10px #b3b3b3 inset;
+            max-width: 600px;
+        }
+         .mw-bs .container{
+            padding-left:25px;
+            padding-right:25px;
+        }
+         .mw-bs .navbar-brand{           
+            background: url("https://files-manywho-com.s3.amazonaws.com/7fec3d0a-bdf3-4416-882f-473e029774d1/Atom-WordMark-clr.png");
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            font-size: 1px;
+            font-weight: 500;
+            line-height: 40px;
+            height: 40px;
+            margin: 15px 15px 15px 10px !important;
+            padding: 5px 0px 5px 151px !important;
+            font-weight: bold;
+            width:200px;
+            color:#fff;
+            cursor: default;
+        }
+        
+        .mw-bs .navbar-brand:hover{
+            color:#fff;
+            font-size: 1px;
+        }
+        
+        .mw-bs .navbar-default {
+            background: #fff;
+            border-radius: 0px;
+            box-shadow: 0px 0px 21px rgba(0, 0, 0, 0.71);
+            margin-top:-100px;
+        }
+        
+         .mw-bs .main-container{
+            background-color: #39a1ce;  
+            color:#fff;     
+        }
+        
+          @media (min-width: 768px){
+            .mw-bs .main-container-inner{
+              
+                background-position: left top;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+        }
+
+        @media (max-width: 767px){
+            .mw-bs .main-container-inner{
+                background-position: left top;
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+        }
+        
+         .mw-bs .navbar-default .navbar-nav>li>a {
+             margin-top: 15px;
+            color: #515151;
+        }
+        
+          .mw-bs .datepicker {
+            /*background-color: #D2B48C;*/
+            color: #333 ;
+            }
+            
+         .mw-bs .timepicker {
+            /*background-color: #D2B48C;*/
+            color: #333 ;
+            }
+        
+
+        
+    </style>
+</body>
+</html>
