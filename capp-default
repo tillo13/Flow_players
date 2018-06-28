@@ -88,6 +88,33 @@
                     playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
                     joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
                 });
+                
+                //Inputs 
+                var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'noInput1';
+                var input2 = queryParameters['input2'] != null ? queryParameters['input2'] : 'noInput2';
+                var input3 = queryParameters['input3'] != null ? queryParameters['input3'] : 'noInput3';
+                var input4 = queryParameters['input4'] != null ? queryParameters['input4'] : 'noInput4';
+                var input5 = queryParameters['input5'] != null ? queryParameters['input5'] : 'noInput5';
+                var input6 = queryParameters['input6'] != null ? queryParameters['input6'] : 'noInput6';
+                var input7 = queryParameters['input7'] != null ? queryParameters['input7'] : 'noInput7';
+                var inputEmail = queryParameters['inputEmail'] != null ? queryParameters['inputEmail'] : 'chriscappetta@boomi.com';
+                var inputPhone = queryParameters['inputPhone'] != null ? queryParameters['inputPhone'] : '9703180975';
+                var inputMode = queryParameters['inputMode'] != null ? queryParameters['inputMode'] : 'auto';
+                
+                var inputs = [
+                    {"input1": input1},
+                    {"input2": input2},
+                    {"input3": input3},
+                    {"input4": input4},
+                    {"input5": input5},
+                    {"input6": input6},
+                    {"input7": input7},
+                    {"inputEmail": inputEmail},
+                    {"inputPhone": inputPhone},
+                    {"inputMode": inputMode}
+                ];
+                var jsonInputs = manywho.json.generateFlowInputs(inputs);
+                //End bit for inputs ^^
 
                 var options = {
                     authentication: {
@@ -101,14 +128,14 @@
                     collaboration: {
                         isEnabled: false
                     },
-                    inputs: null,
+                    inputs: jsonInputs,
                     annotations: null,
                     navigation: {
                         isFixed: true,
                         isWizard: false
                     },
                     callbacks: [],
-                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'yeti'
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'spacelab'
                 };
 
                 var tenantId = queryParameters['tenant-id'];
@@ -136,5 +163,24 @@
     </script>
 
     <script src="https://assets.manywho.com/js/loader.min.js"></script>
+    <style>
+    /*Logo*/
+    .mw-bs .navbar-brand {
+            background: url(https://files-manywho-com.s3.amazonaws.com/038d12aa-2256-455c-9b4e-8e620970e451/Atom-WordMark-clr.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+            font-size: 9px;
+            font-weight: 500;
+            line-height: 20px;
+            width: 90px;
+            height: 40px;
+            margin: 10px 15px 10px 15px !important;
+            padding: 0px 0px 0px 36px !important;
+            font-weight: bold;
+            background-size: contain;
+        }
+        
+        
+    </style>
 </body>
 </html>
