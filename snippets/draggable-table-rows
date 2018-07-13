@@ -1,0 +1,101 @@
+<script type="text/javascript">
+
+
+    function dragstart_handler(ev) {
+        // Add the target element's id to the data transfer object
+        ev.dataTransfer.setData("text/plain", ev.target.id);
+        ev.dropEffect = "move";
+        event.dataTransfer.effectAllowed = "link";
+    }
+
+    function dragover_handler(ev) {
+        ev.preventDefault();
+        // Set the dropEffect to move
+        //ev.dataTransfer.dropEffect = "move";
+        ev.dataTransfer.dropEffect = "link";
+    }
+   
+    function drop_handler(ev) {
+        ev.preventDefault();
+        // Get the id of the target and add the moved element to the target's DOM
+        var data = ev.dataTransfer.getData("text");
+        //$(ev.target).parents("tbody").append($("#"+data));
+        //$("#"+data).find("button").click();
+        
+        // select row
+        $(ev.target).parent("tr").click();
+        
+        // click 'assign' outcome button of the dragged row in this case col 1
+        $(".outcome-assign").click();
+    }
+
+    debugger;
+    
+    $(function() {
+        // Handler for .ready() called.
+
+        // Select the node that will be observed for mutations
+        var targetNode = document.getElementById("manywho"); 
+
+        // Options for the observer (which mutations to observe)
+        var config = { attributes: true, childList: true, subtree: true };
+
+        // Callback function to execute when mutations are observed
+        var callback = function(mutationsList) {
+            for(var mutation of mutationsList) {
+                if (mutation.type == 'childList') {
+                    // mutation.target.tagName === "TBODY" 
+                    console.log("mutation target tag: " + mutation.target.tagName);
+                    // check for dynamically added table rows
+                    if ( mutation.addedNodes.length > 0 && $(mutation.target).find(".draggabletbl").length > 0 ) {
+                        //$(mutation.addedNodes[0]).parents(".draggabletbl").length > 0  ) {
+                    
+                        var drpTblBody = $(mutation.target).find(".draggabletbl").find("tbody");
+                        if (drpTblBody.length > 0 ) {
+
+                            var drpTbRows = drpTblBody.children();
+                            for (var rnum = 0; rnum < drpTbRows.length; rnum++  in drpTbRows) {
+                                // only attributes to data rows not header rows..
+                                if ($(drpTbRows[rnum]).children().length > 0 && $(drpTbRows[rnum]).children("td").length > 0) {
+
+                                    $(drpTbRows[rnum]).attr("draggable", "true")
+                                    $(drpTbRows[rnum]).attr("ondragstart", "dragstart_handler(event)");
+                                    // make source table droppable as well for reverse test
+                                    if (!drpTblBody.attr("ondrop")) {
+                                        drpTblBody.attr("ondrop", "drop_handler(event);"); 
+                                        drpTblBody.attr("ondragover", "dragover_handler(event)");
+                                    }
+
+                                    console.log('droptable added' + mutation.target);
+                                }
+                            }
+                       }
+                    }
+                   
+                    //  check for pre-initialized "droppabletbl" table rows
+                    if ( mutation.addedNodes.length > 0 && $(mutation.target).find(".droppabletbl").length > 0  ) {
+                        var drpTbl = $(mutation.target).find(".droppabletbl").find("tbody");
+                        drpTbl.attr("ondrop", "drop_handler(event);"); 
+                        drpTbl.attr("ondragover", "dragover_handler(event)");
+                    }
+
+                }
+                else if (mutation.type == 'attributes') {
+                    console.log('The ' + mutation.attributeName + ' attribute was modified.');
+                }
+                else {
+                    console.log('A subtree node has been added or removed.'+ mutation.target);
+                }
+            }
+        };
+
+        // Create an observer instance linked to the callback function
+        var observer = new MutationObserver(callback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(targetNode, config);
+    });    
+    
+
+
+    </script>
