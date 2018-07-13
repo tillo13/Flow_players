@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
-    <title>Payment Term Manager</title>
+    <title>DND Table Rows</title>
     <style>
         .mw-bs .wait-container {
             position: absolute;
@@ -95,9 +94,8 @@
         .chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}
 
     </style>
-</style></head>
+</head>
 <body style="height: 100%;">
-        
     <div id="manywho">
         <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
             <div class="wait-container">
@@ -160,7 +158,7 @@
                     collaboration: {
                         isEnabled: false
                     },
-                    inputs: jsonInputs,
+                    inputs: jsonInputs, // Inputs
                     annotations: null,
                     navigation: {
                         isFixed: true,
@@ -221,13 +219,11 @@
             padding: 10px;
             border: 1px solid #ccc;
         }
-        
     </style>
 
-
+<!--Custom Draggable Table Rows-->
+<!--Configuration: draggabletbl droppabletbl and outcom-assign classes are attached to your tables and outcomes respectively-->
 <script type="text/javascript">
-
-
     function dragstart_handler(ev) {
         // Add the target element's id to the data transfer object
         ev.dataTransfer.setData("text/plain", ev.target.id);
@@ -323,10 +319,5 @@
         observer.observe(targetNode, config);
     });    
     
-
-
     </script>
-
-
-
 </body></html>
