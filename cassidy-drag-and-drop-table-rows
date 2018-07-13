@@ -222,7 +222,7 @@
     </style>
 
 <!--Custom Draggable Table Rows-->
-<!--Configuration: draggabletbl droppabletbl and outcom-assign classes are attached to your tables and outcomes respectively-->
+<!--Configuration: draggabletbl droppabletbl and outcom-assign classes are attached to your tables and outcomes respectively. Thanks to Chris Cassidy for building this excellent feature-->
 <script type="text/javascript">
     function dragstart_handler(ev) {
         // Add the target element's id to the data transfer object
