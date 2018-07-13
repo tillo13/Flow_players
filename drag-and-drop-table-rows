@@ -319,5 +319,7 @@
         observer.observe(targetNode, config);
     });    
     
-    </script>
-</body></html>
+</script>
+
+</body>
+</html>
