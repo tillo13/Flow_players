@@ -91,6 +91,7 @@
         var manywho = {
             cdnUrl: 'https://assets.manywho.com',
             requires: ['core', 'bootstrap3'],
+            customResources: ['https://unpkg.com/react-copy-to-clipboard@4.3.1/build/react-copy-to-clipboard.js'],
             initialize: function () {
 
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
@@ -133,6 +134,8 @@
                     callbacks: [],
                     theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'cosmo',
                 };
+                
+               
 
                 var tenantId = queryParameters['tenant-id'];
                 if (!tenantId) {
@@ -142,6 +145,63 @@
                                     return path && path.length > 0;
                                 })[0];
                 }
+                
+                 var customColumn = React.createClass({
+				    render() {
+				        if (this.props.contentValue) {
+        		            if (this.props.contentValue == '1')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-thumbs-up", style:{ color: 'green' }});
+        			        else if (this.props.contentValue == '0')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-thumbs-down", style:{ color: 'red' }});
+        			        
+        			        else
+        			            return this.props.contentValue;
+				        }
+				        return null;
+				    }
+				});
+				manywho.component.register('custom-thumbs', customColumn);
+				
+				var customColumn2 = React.createClass({
+				    
+				    render() {
+				        // Get the current element's "model" (i.e. stuff related to it from the metadata)
+                        // const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+                        
+				        if (this.props.contentValue) {
+        		            if (this.props.contentValue == '1')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-thumbs-up", style:{ color: 'green' , height: '75px' , width: '75px' }});
+        			        else if (this.props.contentValue == '0')
+        			            return React.createElement('span', { className: "glyphicon glyph-lg glyphicon glyphicon-thumbs-down", style:{ color: 'red' }});
+        			        
+        			        else
+        			            return this.props.contentValue;
+				        }
+				        return null;
+				    }
+				});
+				manywho.component.register('custom-thumbs2', customColumn2);
+
+				var copyComponent = React.createClass({
+                      render() {
+                          // Get the current element's "model" (i.e. stuff related to it from the metadata)
+                          const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+                          
+                          // Create an object to hold the properties for the "react-copy-to-clipboard" component
+                          var copyToClipboardProperties = {
+                              onCopy: function() {
+                                  console.log('copied!')
+                              },
+                              text: model.contentValue
+                          };
+                          
+                          // Create the HTML element hierarchy using React.createElement (as you can't use JSX in a player directly)
+                          return React.createElement(CopyToClipboard, copyToClipboardProperties, React.createElement(
+                              'button', null, 'Copy to clipboard'
+                          ));
+                      }
+                    });
+                    manywho.component.register('copy-component', copyComponent);
 
                 manywho.engine.initialize(
                     tenantId,
@@ -244,6 +304,12 @@
         border-style:outset;
     }
     
+    .mw-bs .detailbtn{
+        border-radius:5px;
+        border-width:0px;  
+        border-style:outset;
+    }
+    
     .mw-bs .isereq {
 
         white-space: normal;
@@ -285,6 +351,34 @@
 
     .mw-bs .navbar-default .navbar-collapse, .mw-bs .navbar-default .navbar-form{
         border:0;
+    }
+    
+    .mw-bs .mv {
+        background-color: #8B008B;
+    }
+    .mw-bs .af {
+        background-color: #9ACD32;
+    }
+    .mw-bs .wd {
+        width: 10px;
+    }
+    
+    .mw-bs .cal {
+        width: 550px;
+        height: 550px;
+        max-width: 100%;
+    }
+    
+    .mw-bs .sched {
+        width: 550px;
+        height: 550px;
+        max-width: 100%;
+    }
+    
+    .mw-bs .cal-container {
+        border: 1px solid #696969;
+        background: #f1f1f1;
+        border-radius: 2px;
     }
 
 
@@ -413,6 +507,7 @@
         .mw-bs .table .danger, .mw-bs .table .info, .mw-bs .table .success, .mw-bs .table .warning, .mw-bs table .danger, .mw-bs table .info, .mw-bs table .success, .mw-bs table .warning {
             color: #0a0a0a;
         }
+        
        
     }
     
