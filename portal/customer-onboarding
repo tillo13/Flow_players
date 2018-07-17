@@ -91,7 +91,7 @@
         var manywho = {
             cdnUrl: 'https://assets.manywho.com',
             requires: ['core', 'bootstrap3'],
-            customResources: ['https://s3.amazonaws.com/files-manywho-com/da258443-d394-4263-8d85-168ab9ec699e/radio-button-group.js'],
+            //customResources: ['https://s3.amazonaws.com/files-manywho-com/da258443-d394-4263-8d85-168ab9ec699e/radio-button-group.js'],
             initialize: function () {
 
                 var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
