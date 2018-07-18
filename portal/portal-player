@@ -112,6 +112,33 @@
                         fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt'
                     }
                 });
+                
+                 //Inputs 
+                var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'noInput1';
+                var input2 = queryParameters['input2'] != null ? queryParameters['input2'] : 'noInput2';
+                var input3 = queryParameters['input3'] != null ? queryParameters['input3'] : 'noInput3';
+                var input4 = queryParameters['input4'] != null ? queryParameters['input4'] : 'noInput4';
+                var input5 = queryParameters['input5'] != null ? queryParameters['input5'] : 'noInput5';
+                var input6 = queryParameters['input6'] != null ? queryParameters['input6'] : 'noInput6';
+                var input7 = queryParameters['input7'] != null ? queryParameters['input7'] : 'noInput7';
+                var inputEmail = queryParameters['inputEmail'] != null ? queryParameters['inputEmail'] : 'chriscappetta@boomi.com';
+                var inputPhone = queryParameters['inputPhone'] != null ? queryParameters['inputPhone'] : '9703180975';
+                var inputMode = queryParameters['inputMode'] != null ? queryParameters['inputMode'] : 'auto';
+                
+                var inputs = [
+                    {"input1": input1},
+                    {"input2": input2},
+                    {"input3": input3},
+                    {"input4": input4},
+                    {"input5": input5},
+                    {"input6": input6},
+                    {"input7": input7},
+                    {"inputEmail": inputEmail},
+                    {"inputPhone": inputPhone},
+                    {"inputMode": inputMode}
+                ];
+                var jsonInputs = manywho.json.generateFlowInputs(inputs);
+                //End bit for inputs ^^
 
                 var options = {
                     authentication: {
@@ -125,7 +152,7 @@
                     collaboration: {
                         isEnabled: false
                     },
-                    inputs: null,
+                    inputs: jsonInputs,
                     annotations: null,
                     navigation: {
                         isFixed: true,
