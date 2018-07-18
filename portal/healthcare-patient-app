@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Boomi Healthcare Services</title>
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+
+ /* Spinner */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+           /* border: 3px solid transparent;
+            border-top-color: #268AAF;*/
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+            transform: scale(1.75);
+        }
+
+        /* More Spinner */
+        .mw-bs .wait-spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner .6s linear infinite;
+        }
+
+        @keyframes spinner {
+          to {transform: rotate(360deg);}
+        }
+
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            //customResources: ['https://s3.amazonaws.com/files-manywho-com/da258443-d394-4263-8d85-168ab9ec699e/radio-button-group.js'], //need to update react version
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: 'PATH_AND_VALUES',
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'readable' //Nice addition by Jack Gibson
+                    //theme: queryParameters['theme']
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+       <style>
+       
+       
+     /*Cappetta additions to style the buttons in the center*/
+        .mw-bs {
+            background-color: #f6f6f6;
+        }
+     
+       .mw-bs .btn {
+           max-width:45%;
+           text-align: center;
+       }
+       
+       .mw-bs .btn.clc {
+           text-align: center;
+           color: black;
+           font-size:18px;
+           font-weight: bold;
+           width: 80%;
+           background-color: orange;
+       }
+       
+        .mw-bs .btn.clc2 {
+           text-align: center;
+           color: white;
+           font-size:18px;
+           font-weight: bold;
+           height:75px;
+           width: 60%;
+           background-color: #053851;
+       }
+       
+       .mw-bs .input-group-btn>.btn {
+          /* text-align: center;
+           font-size:18px;
+           font-weight: bold;*/
+           width: 200px;
+       }
+       
+      /* .mw-input {
+            background-color: white;
+            border-radius: 6px;
+       }*/
+       
+       .mw-bs .btn.inc {
+           text-align: center;
+           color: white;
+           font-size:18px;
+           font-weight: bold;
+           height:75px;
+           width: 60%;
+           background-color: #053851;
+       }
+    
+       
+       .mw-bs .navbar {
+            background-color: #f6f6f6;
+       }
+       
+       .mw-bs .navbar .navbar-brand {
+           font-size: 1px;
+           margin-top: 5px;
+       }
+
+       .mw-bs .nav.navbar-nav {
+    	   padding-top: 7px;
+       }
+
+       .mw-bs .navbar .navbar-brand:before {
+           content: url(https://files-manywho-com.s3.amazonaws.com/ada7e06d-7d80-45c8-989d-1b506c556753/smallCareTeamLogo.png);
+       }
+       .mw-bs .vids {
+           max-width: 100%;
+       }
+       
+      /*end clc*/
+
+        .mw-bs .btn.healthnavi {
+            height: 230px;
+            width: 180px;
+           /* white-space: normal;*/
+            background-image: url(https://files-manywho-com.s3.amazonaws.com/ada7e06d-7d80-45c8-989d-1b506c556753/Health%20Navigator.png);
+            background-size: 230px 180px ;
+            background-repeat: no-repeat;
+            background-position: center;
+            padding-top: 200px;
+        }
+        
+
+        .mw-bs .btn.submitcondition {
+            height: 230px;
+            width: 180px;
+            /*white-space: normal;*/
+            background-image: url(https://files-manywho-com.s3.amazonaws.com/ada7e06d-7d80-45c8-989d-1b506c556753/Submit%20COndition.png);
+            background-size: 230px 180px ;
+            background-repeat: no-repeat;
+            background-position: center;
+            padding-top: 200px;
+        }
+
+        .mw-bs .btn.careteamlookup {
+            height: 230px;
+            width: 180px;
+           /* white-space: normal;*/
+            background-image: url(https://files-manywho-com.s3.amazonaws.com/ada7e06d-7d80-45c8-989d-1b506c556753/Care%20Team%20Lookup.png);
+            background-size: 230px 180px ;
+            background-repeat: no-repeat;
+            background-position: center;
+            padding-top: 200px;
+        }
+
+        .mw-bs .btn.findprovider {
+            height: 230px;
+            width: 180px;
+          /*  white-space: normal;*/
+            background-image: url(https://files-manywho-com.s3.amazonaws.com/ada7e06d-7d80-45c8-989d-1b506c556753/Find%20Care%20Provider.png);
+            background-size: 230px 180px ;
+            background-repeat: no-repeat;
+            background-position: center;
+            padding-top: 200px;
+        }
+        
+        img.img-responsive.card {
+            box-shadow: 3px 3px 3px #888888;
+            border-radius: 2px;
+            border-width: 1px;
+            border-style: outset;
+            }
+        
+        img.img-responsive.card:hover {
+            box-shadow: 1px 1px 1px 1px rgba(0, 140, 186, 0.5);
+            transform: scale(1.02);
+        }
+        
+    </style>
+</body>
+</html>
