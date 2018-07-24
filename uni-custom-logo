@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Boomi Onboarding</title>
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+
+        /* Small Spinner */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+            transform: scale(1.75);
+        }
+
+        /* More Spinner */
+        .mw-bs .wait-spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner .6s linear infinite;
+        }
+
+        @keyframes spinner {
+          to {transform: rotate(360deg);}
+        }
+
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                });
+                
+                //Inputs 
+                var input1 = queryParameters['input1'] != null ? queryParameters['input1'] : 'noInput1';
+                var input2 = queryParameters['input2'] != null ? queryParameters['input2'] : 'noInput2';
+                var input3 = queryParameters['input3'] != null ? queryParameters['input3'] : 'noInput3';
+                var input4 = queryParameters['input4'] != null ? queryParameters['input4'] : 'noInput4';
+                var input5 = queryParameters['input5'] != null ? queryParameters['input5'] : 'noInput5';
+                var input6 = queryParameters['input6'] != null ? queryParameters['input6'] : 'noInput6';
+                var input7 = queryParameters['input7'] != null ? queryParameters['input7'] : 'noInput7';
+                var inputEmail = queryParameters['inputEmail'] != null ? queryParameters['inputEmail'] : 'chriscappetta@boomi.com';
+                var inputPhone = queryParameters['inputPhone'] != null ? queryParameters['inputPhone'] : '9703180975';
+                var inputMode = queryParameters['inputMode'] != null ? queryParameters['inputMode'] : 'auto';
+                
+                document.getElementById('navbar').innerHTML = ".mw-bs .navbar-brand {background: url(" + queryParameters['inputNavImage'] + ");background-position: left center;background-repeat: no-repeat;font-size: 9px;font-weight: 500;line-height: 20px;width: 90px;height: 40px;margin: 10px 15px 10px 15px !important;padding: 0px 0px 0px 36px !important;font-weight: bold;background-size: contain;}";
+                
+                var inputs = [
+                    {"input1": input1},
+                    {"input2": input2},
+                    {"input3": input3},
+                    {"input4": input4},
+                    {"input5": input5},
+                    {"input6": input6},
+                    {"input7": input7},
+                    {"inputEmail": inputEmail},
+                    {"inputPhone": inputPhone},
+                    {"inputMode": inputMode}
+                ];
+                var jsonInputs = manywho.json.generateFlowInputs(inputs);
+                //End bit for inputs ^^
+                
+
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: 'PATH_AND_VALUES',
+                    replaceUrl: true,
+                    collaboration: {
+                        isEnabled: true
+                    },
+                    inputs: jsonInputs, //Inject inputs defined above
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'spacelab' //Nice addition by Jack Gibson
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+    <style id="navbar">
+        /*Navbar styling*/
+        .mw-bs .navbar-brand {
+            background: url(https://files-manywho-com.s3.amazonaws.com/038d12aa-2256-455c-9b4e-8e620970e451/Atom-WordMark-clr.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+            font-size: 9px;
+            font-weight: 500;
+            line-height: 20px;
+            width: 90px;
+            height: 40px;
+            margin: 10px 15px 10px 15px !important;
+            padding: 0px 0px 0px 36px !important;
+            font-weight: bold;
+            background-size: contain;
+        }
+        </style>
+        <style>
+        .mw-bs .presentation-details {
+            border: 1px solid grey;
+            border-radius: 3px;
+            padding: 0 15px 15px 15px;
+           
+        }
+        
+        .mw-bs .opps-tab .tab-content {
+            margin-top: 0px;
+            border: 1px solid #ccc;
+            border-top: 0px;
+            padding: 15px;
+        }
+        
+        .mw-bs .nav-tabs>li {
+            float: left;
+            margin-bottom: -1px;
+            background: #eaeaea;
+        }
+        
+        .mw-bs .summary-table {
+            max-width:400px;
+        }
+        
+        .mw-bs .summary-table  td, .mw-bs .summary-table th {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        
+        .mw-bs #myId {
+            border: 1px solid grey;
+            width: 90px;
+           
+        }
+        
+        
+        .mw-bs .docframe {
+            width:100%;
+            height: 470px;
+            max-width: 100%;
+        }
+        
+        .mw-bs .systems {
+            border: 1px solid grey;
+            border-radius: 2px;
+            background: #8080802b;
+            padding: 20px;
+        }
+        
+        .mw-bs .tip-preso {
+            border: 1px solid grey;
+            border-radius: 3px;
+            background: #f7f7f7;
+            max-width: 500px;
+            padding-top: 0px;
+            padding-left: 10px;
+            padding-bottom: 20px;
+           
+        }
+        
+        .mw-bs .alert-danger {
+            background: #D3D3D3;
+        }
+        
+        @media screen and (min-width: 692px) {
+        .mw-bs .no-pad {
+            margin-left: -15px;
+        }
+        }
+    </style>
+</body>
+</html>
