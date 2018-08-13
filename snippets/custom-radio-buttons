@@ -1,1 +1,63 @@
-            customResources: ['https://s3.amazonaws.com/files-manywho-com/da258443-d394-4263-8d85-168ab9ec699e/radio-button-group.js'],
+/* Button styling */
+.mw-bs .radio-group{ margin-left:0; }
+.mw-bs .radio {
+    display:inline;
+    background-color: #ccc;
+    padding:5px 20px;
+    border-radius: 1px 0 0px;
+    border:1px solid #a9a9a9;
+   }
+.mw-bs .radio:first-child {margin-left:0;}
+.mw-bs .radio:last-child {margin-right:0;}
+
+/* clickable field */
+.mw-bs .radio-inline input[type=radio],
+.mw-bs .radio input[type=radio],
+.mw-bs input[type=radio] {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    border: 0;
+    background: 0;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: -5px;
+    right: 0;
+}
+.mw-bs .radio-inline input[type=radio]:checked:before, .mw-bs .radio input[type=radio]:checked:before, .mw-bs input[type=radio]:checked:before
+{
+    background-color:inherit;
+    border:0;
+    outline:0;
+}
+
+.mw-bs .radio-inline input[type=radio]:after, .mw-bs .radio input[type=radio]:after, .mw-bs input[type=radio]:after{
+    border:0;
+    
+}
+
+/* checked */
+.mw-bs .radio-inline input[type=radio]:checked,
+.mw-bs .radio input[type=radio]:checked,
+.mw-bs input[type=radio]:checked {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    border: 0;
+    background: 0;
+    background: #61616154;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: -5px;
+    right: 0;
+    color:#fff;
+    border:1px solid #fff
+}
+.mw-bs .radio-inline input[type=radio]:before, .mw-bs .radio input[type=radio]:before, .mw-bs input[type=radio]:before{
+    display:none;
+}
