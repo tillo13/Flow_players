@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
+    <title>Boomi Flow</title>
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+
+        /* outer */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #268AAF;
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+
+        /* middle */
+        .mw-bs .wait-spinner:before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #31B2E2;
+            -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+
+        /* inner */
+        .mw-bs .wait-spinner:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #154E62;
+            -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+              animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+        }
+
+        @-webkit-keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+        @keyframes spin {
+            0%   {
+                -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(0deg);  /* IE 9 */
+                transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+            100% {
+                -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+                -ms-transform: rotate(360deg);  /* IE 9 */
+                transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+            }
+        }
+
+      
+
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+
+    <script type="text/javascript">
+        var flowData = {};
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                });
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: queryParameters['reporting-mode'],
+                    replaceUrl: true,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    inputs: null,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme']
+                };
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId = window.location.pathname
+                                .split('/')
+                                .filter(function (path) {
+                                    return path && path.length > 0;
+                                })[0];
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+                // Adds 'my-class-1' & 'my-class-2' to the vertical container
+                flowData.tenantId = tenantId;
+                flowData.flowid = queryParameters['flow-id'];
+                flowData.versionid = queryParameters['flow-version-id'],
+                flowData.stateid = "";
+                flowData.container = "main";
+
+
+
+              //  manywho.styling.registerComponent('vertical_flow', ['cc-vertflow']);
+
+            }
+
+          
+
+        };
+
+                
+
+
+    </script>
+
+    <script src="https://assets.manywho.com/js/loader.min.js" type="text/javascript"></script>
+
+    <style type="text/css">
+        
+        .cc-vertflow {
+            background-color: green;
+        }
+
+        .cc-searchByDateUser {
+            border-style: ridge;
+            font-size: 14px;
+            font-weight: thick;
+        }
+      
+      	.glyphicon glyphicon-minus {
+      		font-size: 14px;
+            font-weight: thin;
+      	}
+
+
+
+    </style>
+
+    <script type="text/javascript">
+
+
+    function dragstart_handler(ev) {
+        // Add the target element's id to the data transfer object
+        ev.dataTransfer.setData("text/plain", ev.target.id);
+        ev.dropEffect = "move";
+    }
+
+    function dragover_handler(ev) {
+        ev.preventDefault();
+        // Set the dropEffect to move
+        ev.dataTransfer.dropEffect = "move"
+    }
+    function drop_handler(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+      
+        // get flowkey
+        var flowkey = (flowData.flowkey == undefined || flowData == null) ? flowData.flowkey = manywho.utils.getFlowKey(flowData.tenantId, flowData.flowid, flowData.versionid,  window.location.search.substring(window.location.search.indexOf("=")+1), "main") : flowData.flowkey;
+      
+        // get the id of the draggable row's table component
+        var sourceCompTableID =  $("#"+data).parents(".table-container").attr("id");
+      
+        // get the source component's "state"
+        var sourceCompState = manywho.state.getComponent(sourceCompTableID, flowkey);
+        var targetTableID =  $(ev.target).parents(".table-container").attr("id");
+        var targetCompState = manywho.state.setComponent(targetTableID, sourceCompState, flowkey);
+        var currState = manywho.state.getState(flowkey);
+      
+        // get the source component's "model" data
+        var sourceModelObjArray = manywho.model.getComponent(sourceCompTableID,flowkey).objectData;
+
+        // get the source item's location in the source components's model
+        for (var el = 0; el < sourceModelObjArray.length; el++ ) {
+            if (sourceModelObjArray[el].externalId === data) {
+             
+                // append to target table "model"
+                // get the id of the target table's model, push source model row into it
+                var targetModelObjArray = manywho.model.getComponent(targetTableID,flowkey).objectData;
+                targetModelObjArray.push(sourceModelObjArray[el]);
+
+                // remove row from source model
+                sourceModelObjArray.splice(el,1);
+                manywho.engine.render(flowkey);
+                             
+                // click the target table "update state outcome" button
+                $(ev.target).parents(".table-container").prev().find(".droppappend").click();
+
+
+                break;
+ 
+            }
+      
+        }
+ 
+ 
+    }
+
+
+    debugger;
+    
+    $(function() {
+        // Handler for .ready() called.
+
+        // Select the node that will be observed for mutations
+        var targetNode = document.getElementById("manywho"); 
+
+        // Options for the observer (which mutations to observe)
+        var config = { attributes: true, childList: true, subtree: true };
+
+        // Callback function to execute when mutations are observed
+        var callback = function(mutationsList) {
+            for(var mutation of mutationsList) {
+                if (mutation.type == 'childList') {
+                    // check for dynamically added table rows
+                    if ( mutation.addedNodes.length > 0 && $(mutation.target).find(".draggabletbl").length > 0 ) {
+                    
+                        var drpTblBody = $(mutation.target).find(".draggabletbl").find("tbody");
+                        if (drpTblBody.length > 0 ) {
+
+                            var drpTbRows = drpTblBody.children();
+                            for (var rnum = 0; rnum < drpTbRows.length; rnum++  in drpTbRows) {
+                                // only attributes to data rows not header rows..
+                                if ($(drpTbRows[rnum]).children().length > 0 && $(drpTbRows[rnum]).children("td").length > 0) {
+
+                                    $(drpTbRows[rnum]).attr("draggable", "true")
+                                    $(drpTbRows[rnum]).attr("ondragstart", "dragstart_handler(event)");
+                                    // make source table droppable as well for reverse test
+                                    if (!drpTblBody.attr("ondrop")) {
+                                        drpTblBody.attr("ondrop", "drop_handler(event);"); 
+                                        drpTblBody.attr("ondragover", "dragover_handler(event)");
+                                    }
+
+                                }
+                            }
+                       }
+                    }
+                   
+                    //  check for pre-initialized "droppabletbl" table rows
+                    if ( mutation.addedNodes.length > 0 && $(mutation.target).find(".droppabletbl").length > 0  ) {
+                        var drpTbl = $(mutation.target).find(".droppabletbl").find("tbody");
+                        drpTbl.attr("ondrop", "drop_handler(event);"); 
+                        drpTbl.attr("ondragover", "dragover_handler(event)");
+                    }
+
+                }
+           
+            }
+        };
+
+        // Create an observer instance linked to the callback function
+        var observer = new MutationObserver(callback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(targetNode, config);
+    });    
+    
+
+
+    </script>
+
+  
+</body>
+</html>
