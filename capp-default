@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <link rel="icon" href="https://assets.manywho.com/img/favicon.ico">
     <title>Boomi Flow</title>
+    <!--CC Icons-->
+    <link rel="icon" type="image/png" href="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/favicon.png">
+    <link rel="apple-touch-icon" href="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/touch-icon-iphone.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/touch-icon-ipad-retina.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/touch-icon-iphone-retina.png">
+    <link rel="icon" sizes="192x192" href="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/android-icon.png">
+    <meta name="msapplication-square310x310logo" content="https://files-manywho-com.s3.amazonaws.com/4599bfde-2ed0-4c14-bf26-53772a1a2f6f/microsoft-icon.png">
     <style>
         .mw-bs .wait-container {
             position: absolute;
