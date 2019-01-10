@@ -61,3 +61,7 @@
 .mw-bs .radio-inline input[type=radio]:before, .mw-bs .radio input[type=radio]:before, .mw-bs input[type=radio]:before{
     display:none;
 }
+
+.mw-bs .radio-inline input[type=radio], .mw-bs .radio input[type=radio], .mw-bs input[type=radio] {   
+    -webkit-appearance: none;
+}
